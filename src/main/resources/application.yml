@@ -1,0 +1,36 @@
+spring:
+  web:
+    resources:
+      static-locations: classpath:/dist/
+      add-mappings: false
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never
+#  datasource:
+#    url: jdbc:mariadb://mariadb:3306/arbitrage
+#    username: root
+#    password: arbitrage
+#    driver-class-name: org.mariadb.jdbc.Driver
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+  datasource:
+    #    url: -------------------------------develop ?
+    hikari:
+      jdbc-url: jdbc:h2:tcp://localhost/~/arbitrage
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  logging.level:
+    org.hibernate:
+      sql: debug
+      type.descriptor.sql: trace # sql? ????? ? ???
