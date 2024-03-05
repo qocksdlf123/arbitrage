@@ -3,6 +3,7 @@ package com.arbitrage.domain.upbit.service;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
+import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.OrderBook;
@@ -28,6 +29,12 @@ public class UpbitPrice {
             MarketDataService marketDataService = upbit.getMarketDataService();
             AccountService accountService = upbit.getAccountService();
             ExchangeMetaData exchangeMetaData = upbit.getExchangeMetaData();
+            ExchangeSpecification exchangeSpecification = upbit.getExchangeSpecification();
+
+
+            log.info("exchangeSpecification : {}", exchangeSpecification);
+
+
             List<Instrument> exchangeInstruments = upbit.getExchangeInstruments();
             log.info("exchangeInstruments : {}",exchangeInstruments);
             log.info("exchangeInstruments 개수 : {}",exchangeInstruments.size());
@@ -55,12 +62,12 @@ public class UpbitPrice {
 
 //            FundingRates fundingRates = ma
 //            log.info("ticker : {}",fundingRates);
-
-            orderBook.getBids().forEach(bid -> System.out.println("Price: " + bid.getLimitPrice() + " Amount: " + bid.getOriginalAmount()));
-            List<LimitOrder> bids = orderBook.getBids();
-            // 매도 주문 출력
-            System.out.println("\nAsks:");
-            orderBook.getAsks().forEach(ask -> System.out.println("Price: " + ask.getLimitPrice() + " Amount: " + ask.getOriginalAmount()));
+            orderBook.getAsks().forEach(bid -> log.info("bid : {}",bid.toString()));
+//            orderBook.getBids().forEach(bid -> System.out.println("Price: " + bid.getLimitPrice() + " Amount: " + bid.getOriginalAmount()));
+//            List<LimitOrder> bids = orderBook.getBids();
+//            // 매도 주문 출력
+//            System.out.println("\nAsks:");
+//            orderBook.getAsks().forEach(ask -> System.out.println("Price: " + ask.getLimitPrice() + " Amount: " + ask.getOriginalAmount()));
 
             //입출금 가능 여부
             log.info("accountService : {}",accountService);
