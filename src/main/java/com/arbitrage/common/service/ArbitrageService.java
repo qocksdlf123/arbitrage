@@ -15,7 +15,9 @@ import java.util.List;
 public class ArbitrageService {
     private final RestTemplate restTemplate;
 
-    public String getDAW(Currency currency) {
+    public void getDAW() {
+        String refreshToken = getRefreshToken();
+        log.info("refreshToken : {}",refreshToken);
         String graphqlEndpoint = "https://api.thedddari.com/graphql";
 
         String graphqlQuery = "{\n" +
@@ -35,21 +37,11 @@ public class ArbitrageService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> request = new HttpEntity<>(graphqlEndpoint, headers);
+        headers.set("Authorization","Bearer " + refreshToken);
+        HttpEntity<String> request = new HttpEntity<>(graphqlQuery, headers);
         ResponseEntity<String> responseEntity = restTemplate.exchange(graphqlEndpoint, HttpMethod.POST, request, String.class);
-
-
-        List<String> strings = responseEntity.getHeaders().get("Set-Cookie");
-
-        String csrf_token = strings.get(0);
-        Integer indexOfEqual = csrf_token.indexOf("=");
-        Integer indexOfSemicolon = csrf_token.indexOf(";");
-        String refeshToken = csrf_token.substring(indexOfEqual + 1,indexOfSemicolon);
-        return refeshToken;
-
-
-
+        String body = responseEntity.getBody();
+        log.info("body : {}",body.toString());
 
 
     }
@@ -67,6 +59,7 @@ public class ArbitrageService {
         List<String> strings = responseEntity.getHeaders().get("Set-Cookie");
 
         String csrf_token = strings.get(0);
+        log.info("csrf_token : {}",csrf_token);
         Integer indexOfEqual = csrf_token.indexOf("=");
         Integer indexOfSemicolon = csrf_token.indexOf(";");
         String refeshToken = csrf_token.substring(indexOfEqual + 1,indexOfSemicolon);
