@@ -1,4 +1,4 @@
-package com.arbitrage.domain.okx.domain;
+package com.arbitrage.domain.okex.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OkxPair {
+public class OkexPair {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "okx_pair_id")

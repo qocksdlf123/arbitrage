@@ -1,7 +1,7 @@
 package com.arbitrage;
 
 import com.arbitrage.common.service.ArbitrageService;
-import com.arbitrage.domain.upbit.service.UpbitPairService;
+import com.arbitrage.domain.huobi.service.HuobiPairService;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.C;
 import org.knowm.xchange.currency.Currency;
@@ -18,37 +18,51 @@ import java.util.List;
 @Slf4j
 public class ArbitrageApplication {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(ArbitrageApplication.class);
 
-        UpbitPairService upbitPairService = context.getBean(UpbitPairService.class);
+        HuobiPairService huobiPairService = context.getBean(HuobiPairService.class);
         ArbitrageService arbitrageService = context.getBean(ArbitrageService.class);
 
 
-//        upbitPairService.saveUpbitPair();
-        Double orderbookVolume = upbitPairService.getOrderbookVolume(new CurrencyPair("AVAX/KRW"), true);
-        System.out.println(String.format("%.4f",orderbookVolume) );
+//        HuobiPairService.saveHuobiPair();
+//        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("AVAX/KRW"), true);
+//        System.out.println(String.format("%.4f", orderbookVolume));
 
 //        String refreshToken = arbitrageService.getRefreshToken();
 //        System.out.println(refreshToken);
 
 //        arbitrageService.getDAW();
 
-        List<Instrument> currencyList = upbitPairService.getCurrencyList();
-        currencyList.forEach((i) -> {
-            Currency base = i.getBase();
-            Currency counter = i.getCounter();
-            CurrencyPair currencypair = new CurrencyPair(base.toString() + "/" + counter.toString());
-            Double currentPrice = 0D;
-            try {
-                currentPrice = upbitPairService.currentPrice(currencypair);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }finally {
-                log.info("base : {} , counter : {}",base,counter);
-                log.info("currentPrice : {}",currentPrice);
-            }
-        });
+        List<Instrument> currencyList = huobiPairService.getCurrencyList();
+        log.info("currencyList : {}",currencyList);
+        Integer callNumber = 0;
+//        for (Instrument i : currencyList) {
+//
+//
+//            if(callNumber == 9) {
+//                Thread.sleep(1000);
+//                callNumber = 0;
+//            }
+//            Currency base = i.getBase();
+//            Currency counter = i.getCounter();
+//            if(!counter.toString().equals("USDT")){
+//                continue;
+//            }
+//            CurrencyPair currencypair = new CurrencyPair(base.toString() + "/" + counter.toString());
+//            Double currentPrice = 0D;
+//            try {
+//                currentPrice = huobiPairService.currentPrice(currencypair);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            } finally {
+//                log.info("base : {} , counter : {}", base, counter);
+//                log.info("currentPrice : {}", currentPrice);
+//            }
+//            callNumber++;
+//        }
+        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("SOFI/USDT"), true);
+        log.info("orderbookVolume : {}",orderbookVolume );
     }
 
 

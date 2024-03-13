@@ -34,6 +34,9 @@ dependencies {
     //Xchange 라이브러리
     implementation 'org.knowm.xchange:xchange-upbit:5.1.1'
     implementation 'org.knowm.xchange:xchange-okex:5.1.1'
+    implementation 'org.knowm.xchange:xchange-huobi:5.1.1'
+
+
 }
 
 tasks.named('test') {
