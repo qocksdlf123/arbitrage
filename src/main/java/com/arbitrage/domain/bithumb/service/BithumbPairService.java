@@ -1,16 +1,18 @@
-package com.arbitrage.domain.okex.service;
+package com.arbitrage.domain.bithumb.service;
 
-import com.arbitrage.domain.okex.dao.OkexPairRepository;
-import com.arbitrage.domain.okex.domain.OkexPair;
+import com.arbitrage.domain.bithumb.dao.BithumbPairRepository;
+import com.arbitrage.domain.bithumb.domain.BithumbPair;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
+import org.knowm.xchange.bithumb.BithumbExchange;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.trade.LimitOrder;
-import org.knowm.xchange.okex.OkexExchange;
+import org.knowm.xchange.bithumb.BithumbExchange;
 import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.springframework.stereotype.Service;
@@ -22,32 +24,32 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OkexPairService {
-    Exchange Okex = ExchangeFactory.INSTANCE.createExchange(OkexExchange.class);
-    MarketDataService marketDataService = Okex.getMarketDataService();
-    List<Instrument> exchangeInstruments = Okex.getExchangeInstruments();
+public class BithumbPairService {
+    Exchange Bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
+    MarketDataService marketDataService = Bithumb.getMarketDataService();
+    List<Instrument> exchangeInstruments = Bithumb.getExchangeInstruments();
 
-    private final OkexPairRepository okexPairRepository;
 
+    private final BithumbPairRepository BithumbPairRepository;
     private final RestTemplate restTemplate;
 
-    public void saveOkexPair() {      // 1회성 pair 쌍 저장 메서드
+    public void saveBithumbPair() {      // 1회성 pair 쌍 저장 메서드
         log.info("exchangeInstruments : {}", exchangeInstruments);
         log.info("exchangeInstruments 개수 : {}", exchangeInstruments.size());
         exchangeInstruments.forEach((Instrument i) -> {
-            OkexPair okexPair = OkexPair.builder()
+            BithumbPair bithumbPair = BithumbPair.builder()
                     .tokenSymbol(i.getBase().toString())
                     .currency(i.getCounter().toString())
                     .build();
-            okexPairRepository.save(okexPair);
+            BithumbPairRepository.save(bithumbPair);
 
             log.info("Instrument : {} {}", i.getBase(), i.getCounter());
         });
     }
 
-    public void addOkexTokenName() {
-        List<OkexPair> OkexPairs = okexPairRepository.findAll();
-        OkexPairs.forEach((OkexPair OkexPair) -> {
+    public void addBithumbTokenName() {
+        List<BithumbPair> BithumbPairs = BithumbPairRepository.findAll();
+        BithumbPairs.forEach((BithumbPair BithumbPair) -> {
             // 구현 예정
         });
     }
@@ -61,8 +63,8 @@ public class OkexPairService {
 //                + "-"
 //                +currencyPair.getBase().toString().toUpperCase();
 //        log.info("marketCode : {}",marketCode);
-//        String tickerUrl = "https://api.Okex.com/v1/ticker?markets=" + marketCode.toString();
-////        OkexCurrencyRequestDto dto = restTemplate.getForObject(tickerUrl,OkexCurrencyRequestDto.class);
+//        String tickerUrl = "https://api.Bithumb.com/v1/ticker?markets=" + marketCode.toString();
+////        BithumbCurrencyRequestDto dto = restTemplate.getForObject(tickerUrl,BithumbCurrencyRequestDto.class);
 //        String dto = restTemplate.getForObject(tickerUrl,String.class);
 //        log.info("last price : {}",dto);
 //        Double lastPrice = 0D;
@@ -86,7 +88,7 @@ public class OkexPairService {
             for (LimitOrder ask : asks) {
                 log.info("ask : {}",ask);
                 Double limitPrice = ask.getLimitPrice().doubleValue();
-                if (limitPrice <= currentPrice * 1.05) {
+                if (limitPrice <= currentPrice * 1.03) {
                     totalTokenAmount += ask.getOriginalAmount().doubleValue();
                 }
             }
@@ -112,7 +114,18 @@ public class OkexPairService {
         }
         log.info("totalTokenAmount : {}",totalTokenAmount);
         log.info("totalTokenAmount * currentPrice : {}",totalTokenAmount * currentPrice);
-        log.info("Multiple : {}", Multiple);
+//        log.info("Multiple : {}", Multiple);
         return totalTokenAmount * currentPrice * Multiple;
     }
+
+    public Integer[] getDWStatus(String currency){
+        JsonNode node = restTemplate.getForObject("https://api.bithumb.com/public/assetsstatus/multichain/" + currency, JsonNode.class);
+        Integer depositStatus = node.get("data").get(0).get("deposit_status").asInt();
+        Integer withdrawalStatus = node.get("data").get(0).get("withdrawal_status").asInt();
+        return new Integer[] {depositStatus, withdrawalStatus};
+
+    }
+
+
+
 }

@@ -35,6 +35,11 @@ dependencies {
     implementation 'org.knowm.xchange:xchange-upbit:5.1.1'
     implementation 'org.knowm.xchange:xchange-okex:5.1.1'
     implementation 'org.knowm.xchange:xchange-huobi:5.1.1'
+    implementation 'org.knowm.xchange:xchange-bithumb:5.1.1'
+    implementation 'org.knowm.xchange:xchange-binance:5.1.1'
+    implementation 'org.knowm.xchange:xchange-bybit:5.1.1'
+    implementation 'org.knowm.xchange:xchange-gateio:5.1.1'
+
 
 
 }

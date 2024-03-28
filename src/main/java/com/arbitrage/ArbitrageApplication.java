@@ -2,6 +2,7 @@ package com.arbitrage;
 
 import com.arbitrage.common.service.ArbitrageService;
 import com.arbitrage.domain.huobi.service.HuobiPairService;
+import com.arbitrage.domain.okex.service.OkexPairService;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.C;
 import org.knowm.xchange.currency.Currency;
@@ -22,6 +23,7 @@ public class ArbitrageApplication {
         ConfigurableApplicationContext context = SpringApplication.run(ArbitrageApplication.class);
 
         HuobiPairService huobiPairService = context.getBean(HuobiPairService.class);
+        OkexPairService okexPairService = context.getBean(OkexPairService.class);
         ArbitrageService arbitrageService = context.getBean(ArbitrageService.class);
 
 
@@ -61,8 +63,11 @@ public class ArbitrageApplication {
 //            }
 //            callNumber++;
 //        }
-        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("SOFI/USDT"), true);
+        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true);
         log.info("orderbookVolume : {}",orderbookVolume );
+
+//        Double orderbookVolume = okexPairService.getOrderbookVolume(new CurrencyPair("ID/USDT"), true);
+//        log.info("orderbookVolume : {}",orderbookVolume );
     }
 
 
