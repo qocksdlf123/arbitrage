@@ -1,6 +1,7 @@
 package com.arbitrage;
 
 import com.arbitrage.common.service.ArbitrageService;
+import com.arbitrage.domain.bithumb.service.BithumbPairService;
 import com.arbitrage.domain.huobi.service.HuobiPairService;
 import com.arbitrage.domain.okex.service.OkexPairService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class ArbitrageApplication {
         HuobiPairService huobiPairService = context.getBean(HuobiPairService.class);
         OkexPairService okexPairService = context.getBean(OkexPairService.class);
         ArbitrageService arbitrageService = context.getBean(ArbitrageService.class);
+        BithumbPairService bithumbPairService = context.getBean(BithumbPairService.class);
 
 
 //        HuobiPairService.saveHuobiPair();
@@ -68,6 +70,10 @@ public class ArbitrageApplication {
 
 //        Double orderbookVolume = okexPairService.getOrderbookVolume(new CurrencyPair("ID/USDT"), true);
 //        log.info("orderbookVolume : {}",orderbookVolume );
+
+        Integer[] eths = bithumbPairService.getDWStatus("Eth");
+        log.info("deposit : {}, withdrawal : {}",eths[0],eths[1]);
+
     }
 
 
