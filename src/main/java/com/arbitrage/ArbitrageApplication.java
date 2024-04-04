@@ -29,7 +29,8 @@ public class ArbitrageApplication {
         BithumbPairService bithumbPairService = context.getBean(BithumbPairService.class);
 
 
-//        HuobiPairService.saveHuobiPair();
+//        huobiPairService.saveHuobiPair();
+//        bithumbPairService.saveBithumbPair();
 //        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("AVAX/KRW"), true);
 //        System.out.println(String.format("%.4f", orderbookVolume));
 
@@ -73,6 +74,10 @@ public class ArbitrageApplication {
 
         Integer[] eths = bithumbPairService.getDWStatus("Eth");
         log.info("deposit : {}, withdrawal : {}",eths[0],eths[1]);
+
+        Integer[] eths1 = huobiPairService.getDWStatus("ETH");
+        log.info("deposit : {}, withdrawal : {}",eths1[0],eths1[1]);
+
 
     }
 

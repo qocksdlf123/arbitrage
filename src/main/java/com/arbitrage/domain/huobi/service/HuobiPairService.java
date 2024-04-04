@@ -2,6 +2,7 @@ package com.arbitrage.domain.huobi.service;
 
 import com.arbitrage.domain.huobi.dao.HuobiPairRepository;
 import com.arbitrage.domain.huobi.domain.HuobiPair;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.knowm.xchange.Exchange;
@@ -114,6 +115,19 @@ public class HuobiPairService {
         log.info("totalTokenAmount * currentPrice : {}",totalTokenAmount * currentPrice);
 //        log.info("Multiple : {}", Multiple);
         return totalTokenAmount * currentPrice * Multiple;
+    }
+
+    public Integer[] getDWStatus(String currency){
+        JsonNode node = restTemplate.getForObject("https://api.huobi.pro/v2/reference/currencies?currency=" + currency, JsonNode.class);
+        String depositStatus = node.get("data").get(0).get("chains").get(0).get("depositStatus").asText();
+        String withdrawalStatus = node.get("data").get(0).get("chains").get(0).get("withdrawStatus").asText();
+        Integer[] status = new Integer[2];
+        if(depositStatus.equals("allowed")) status[0] = 1;
+        else if (depositStatus.equals("prohibited")) status[0] = 0;
+        if(withdrawalStatus.equals("allowed")) status[1] = 1;
+        else if (withdrawalStatus.equals("prohibited")) status[1] = 0;
+
+        return status;
     }
 
 }
