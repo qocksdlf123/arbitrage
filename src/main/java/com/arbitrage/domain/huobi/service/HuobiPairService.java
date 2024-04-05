@@ -118,7 +118,11 @@ public class HuobiPairService {
     }
 
     public Integer[] getDWStatus(String currency){
-        JsonNode node = restTemplate.getForObject("https://api.huobi.pro/v2/reference/currencies?currency=" + currency, JsonNode.class);
+        String url = "https://api.huobi.pro/v2/reference/currencies?currency=" + currency;
+        log.info("url : {}, ", url);
+        JsonNode node = restTemplate.getForObject(url, JsonNode.class);
+        log.info("nod : {}",node);
+        log.info("currency : {}",currency);
         String depositStatus = node.get("data").get(0).get("chains").get(0).get("depositStatus").asText();
         String withdrawalStatus = node.get("data").get(0).get("chains").get(0).get("withdrawStatus").asText();
         Integer[] status = new Integer[2];

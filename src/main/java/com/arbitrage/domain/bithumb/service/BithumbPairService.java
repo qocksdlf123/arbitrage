@@ -25,9 +25,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class BithumbPairService {
-    Exchange Bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
-    MarketDataService marketDataService = Bithumb.getMarketDataService();
-    List<Instrument> exchangeInstruments = Bithumb.getExchangeInstruments();
+    Exchange bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
+    MarketDataService marketDataService = bithumb.getMarketDataService();
+    List<Instrument> exchangeInstruments = bithumb.getExchangeInstruments();
 
 
     private final BithumbPairRepository BithumbPairRepository;

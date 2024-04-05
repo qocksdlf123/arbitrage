@@ -6,6 +6,9 @@ import com.arbitrage.domain.huobi.service.HuobiPairService;
 import com.arbitrage.domain.okex.service.OkexPairService;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.C;
+import org.knowm.xchange.Exchange;
+import org.knowm.xchange.ExchangeFactory;
+import org.knowm.xchange.bithumb.BithumbExchange;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.instrument.Instrument;
@@ -75,11 +78,18 @@ public class ArbitrageApplication {
         Integer[] eths = bithumbPairService.getDWStatus("Eth");
         log.info("deposit : {}, withdrawal : {}",eths[0],eths[1]);
 
-        Integer[] eths1 = huobiPairService.getDWStatus("ETH");
+        Integer[] eths1 = huobiPairService.getDWStatus("eth");
         log.info("deposit : {}, withdrawal : {}",eths1[0],eths1[1]);
 
+        Exchange bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
+        List<Instrument> bithumbCurrencyList = bithumb.getExchangeInstruments();
+        log.info("bithumbCurrencyList size : {}", bithumbCurrencyList.size());
+        bithumbCurrencyList.forEach((i)->{
+            log.info("빗썸 Instrument : {}", i);
+        });
 
+        Double aDouble = bithumbPairService.getOrderbookVolume(new CurrencyPair("ETH/KRW"), true);
+        log.info("aDouble : {}",aDouble);
     }
-
 
 }
