@@ -1,26 +1,23 @@
 package com.arbitrage;
 
-import com.arbitrage.common.service.ArbitrageService;
+import com.arbitrage.common.service.BithumbHuobiServcie;
+import com.arbitrage.common.service.ThettariService;
 import com.arbitrage.domain.bithumb.service.BithumbPairService;
 import com.arbitrage.domain.huobi.service.HuobiPairService;
 import com.arbitrage.domain.okex.service.OkexPairService;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.C;
-import org.knowm.xchange.Exchange;
-import org.knowm.xchange.ExchangeFactory;
-import org.knowm.xchange.bithumb.BithumbExchange;
-import org.knowm.xchange.currency.Currency;
-import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.instrument.Instrument;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.IOException;
 import java.util.List;
 
 @SpringBootApplication
 @Slf4j
+@EnableScheduling
 public class ArbitrageApplication {
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -28,9 +25,10 @@ public class ArbitrageApplication {
 
         HuobiPairService huobiPairService = context.getBean(HuobiPairService.class);
         OkexPairService okexPairService = context.getBean(OkexPairService.class);
-        ArbitrageService arbitrageService = context.getBean(ArbitrageService.class);
+        ThettariService thettariService = context.getBean(ThettariService.class);
         BithumbPairService bithumbPairService = context.getBean(BithumbPairService.class);
-
+        BithumbHuobiServcie bithumbHuobiServcie = context.getBean(BithumbHuobiServcie.class);
+        bithumbHuobiServcie.compare();
 
 //        huobiPairService.saveHuobiPair();
 //        bithumbPairService.saveBithumbPair();
@@ -42,8 +40,8 @@ public class ArbitrageApplication {
 
 //        arbitrageService.getDAW();
 
-        List<Instrument> currencyList = huobiPairService.getCurrencyList();
-        log.info("currencyList : {}",currencyList);
+//        List<Instrument> currencyList = huobiPairService.getCurrencyList();
+//        log.info("currencyList : {}",currencyList);
         Integer callNumber = 0;
 //        for (Instrument i : currencyList) {
 //
@@ -69,27 +67,27 @@ public class ArbitrageApplication {
 //            }
 //            callNumber++;
 //        }
-        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true);
-        log.info("orderbookVolume : {}",orderbookVolume );
-
-//        Double orderbookVolume = okexPairService.getOrderbookVolume(new CurrencyPair("ID/USDT"), true);
+//        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true);
 //        log.info("orderbookVolume : {}",orderbookVolume );
-
-        Integer[] eths = bithumbPairService.getDWStatus("Eth");
-        log.info("deposit : {}, withdrawal : {}",eths[0],eths[1]);
-
-        Integer[] eths1 = huobiPairService.getDWStatus("eth");
-        log.info("deposit : {}, withdrawal : {}",eths1[0],eths1[1]);
-
-        Exchange bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
-        List<Instrument> bithumbCurrencyList = bithumb.getExchangeInstruments();
-        log.info("bithumbCurrencyList size : {}", bithumbCurrencyList.size());
-        bithumbCurrencyList.forEach((i)->{
-            log.info("빗썸 Instrument : {}", i);
-        });
-
-        Double aDouble = bithumbPairService.getOrderbookVolume(new CurrencyPair("ETH/KRW"), true);
-        log.info("aDouble : {}",aDouble);
+//
+////        Double orderbookVolume = okexPairService.getOrderbookVolume(new CurrencyPair("ID/USDT"), true);
+////        log.info("orderbookVolume : {}",orderbookVolume );
+//
+//        Integer[] eths = bithumbPairService.getDWStatus("Eth");
+//        log.info("deposit : {}, withdrawal : {}",eths[0],eths[1]);
+//
+//        Integer[] eths1 = huobiPairService.getDWStatus("eth");
+//        log.info("deposit : {}, withdrawal : {}",eths1[0],eths1[1]);
+//
+//        Exchange bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
+//        List<Instrument> bithumbCurrencyList = bithumb.getExchangeInstruments();
+//        log.info("bithumbCurrencyList size : {}", bithumbCurrencyList.size());
+//        bithumbCurrencyList.forEach((i)->{
+//            log.info("빗썸 Instrument : {}", i);
+//        });
+//
+//        Double aDouble = bithumbPairService.getOrderbookVolume(new CurrencyPair("ETH/KRW"), true);
+//        log.info("aDouble : {}",aDouble);
     }
 
 }

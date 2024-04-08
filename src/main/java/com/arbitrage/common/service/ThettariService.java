@@ -6,13 +6,12 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Currency;
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ArbitrageService {
+public class ThettariService {
     private final RestTemplate restTemplate;
 
     public void getDAW() {
