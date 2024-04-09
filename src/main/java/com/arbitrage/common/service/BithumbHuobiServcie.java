@@ -43,8 +43,9 @@ public class BithumbHuobiServcie {
         }
         log.info("pairList : {} ",pairList.toString());
         Iterator<String> iterator = pairList.iterator();
-
+        while (iterator.hasNext()){
+            String symbol = iterator.next();
+            log.info("symbol : {}",symbol);
+        }
     }
-
-
 }
