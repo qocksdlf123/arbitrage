@@ -34,3 +34,10 @@ spring:
     org.hibernate:
       sql: debug
       type.descriptor.sql: trace # sql? ????? ? ???
+kakao:
+  url:
+    sendme: https://kapi.kakao.com/v2/api/talk/memo/default/send
+    oauth: https://kauth.kakao.com/oauth/token
+    sendfriend: https://kapi.kakao.com/v1/api/talk/friends/message/default/send
+  key:
+    restapi: 7ea74159c7a47e8845cd28547f145243
