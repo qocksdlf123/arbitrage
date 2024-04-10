@@ -137,7 +137,7 @@ public class HuobiPairService {
     @Scheduled(cron = "0 */10 * * * *")
     void getOrderBook() throws IOException {
         log.info("1");
-        CurrencyPair currencyPair = new CurrencyPair("LBL/USDT");
+        CurrencyPair currencyPair = new CurrencyPair("BFC/USDT");
         Double currentPrice = currentPrice(currencyPair);
         Double totalTokenAmount = 0D;
         OrderBook orderBook = marketDataService.getOrderBook(currencyPair);
