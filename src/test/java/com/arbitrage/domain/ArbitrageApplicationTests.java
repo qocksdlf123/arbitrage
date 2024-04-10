@@ -1,6 +1,6 @@
 package com.arbitrage.domain;
 
-import com.arbitrage.common.service.ArbitrageService;
+import com.arbitrage.common.service.ThettariService;
 import com.arbitrage.domain.bithumb.service.BithumbPairService;
 import com.arbitrage.domain.huobi.service.HuobiPairService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -39,7 +38,7 @@ public class ArbitrageApplicationTests {
     Exchange bithumb = ExchangeFactory.INSTANCE.createExchange(BithumbExchange.class);
 
     @InjectMocks
-    private ArbitrageService arbitrageService;
+    private ThettariService thettariService;
 
     @BeforeEach
     void setUp() {

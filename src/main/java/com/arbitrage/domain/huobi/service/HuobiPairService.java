@@ -14,6 +14,7 @@ import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.instrument.Instrument;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.knowm.xchange.huobi.HuobiExchange;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -133,5 +134,39 @@ public class HuobiPairService {
 
         return status;
     }
+    @Scheduled(cron = "0 */10 * * * *")
+    void getOrderBook() throws IOException {
+        log.info("1");
+        CurrencyPair currencyPair = new CurrencyPair("BFC/USDT");
+        Double currentPrice = currentPrice(currencyPair);
+        Double totalTokenAmount = 0D;
+        OrderBook orderBook = marketDataService.getOrderBook(currencyPair);
+        log.info("currentPrice : {}", currentPrice);
 
+        //ask : 매도 호가창 bid : 매수 호가창
+
+        List<LimitOrder> asks = orderBook.getAsks();
+        for (LimitOrder ask : asks) {
+            Double limitPrice = ask.getLimitPrice().doubleValue();
+            if (limitPrice <= currentPrice * 1.05) {
+                totalTokenAmount += ask.getOriginalAmount().doubleValue();
+            }
+        }
+
+        String currency = currencyPair.getCounter().toString();
+
+        Double Multiple = 0D;
+        log.info("currency : {}", currency);
+        if (currency.equals("KRW")) {
+            Multiple = 1D;
+        } else if (currency.equals("BTC")) {
+            Multiple = 90000000D; // 추후 비트코인 가격을 통해 값 받아올 것
+        } else if (currency.equals("USDT")) {
+            Multiple = 1300D;       //추후 원달러 환율 API를 통해 값 받아올 것
+        }
+        log.info("totalTokenAmount : {}", totalTokenAmount);
+        log.info("totalTokenAmount * currentPrice : {}", totalTokenAmount * currentPrice);
+//        log.info("Multiple : {}", Multiple);
+
+    }
 }
