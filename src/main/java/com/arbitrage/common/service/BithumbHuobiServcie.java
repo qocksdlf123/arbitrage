@@ -63,14 +63,13 @@ public class BithumbHuobiServcie {
     /*
      현재의 빗썸 가격을 가져와 HTX의 오더북 기준 15% 내에 있는 물량 확인
      */
-    @Scheduled(cron = "0 */5 * * * * *")
+    @Scheduled(cron = "0 */5 * * * * ")
     public void getBFCQuantity() throws IOException {
         CurrencyPair currencyPair = new CurrencyPair("BFC/USDT");
         Double currentPrice = bithumbPairService.getCurrentPrice(currencyPair);
         Double totalTokenAmount = 0D;
         OrderBook orderBook = huobiMarketDataService.getOrderBook(currencyPair);
         log.info("currentPrice : {}", currentPrice);
-
 
         List<LimitOrder> asks = orderBook.getAsks();
         for (LimitOrder ask : asks) {
@@ -95,7 +94,4 @@ public class BithumbHuobiServcie {
         log.info("totalTokenAmount : {}", totalTokenAmount);
         log.info("totalTokenAmount * currentPrice * Multiple : {}", totalTokenAmount * currentPrice * multiple);
     }
-
-
-
 }

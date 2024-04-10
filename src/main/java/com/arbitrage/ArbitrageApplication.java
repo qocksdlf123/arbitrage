@@ -1,6 +1,7 @@
 package com.arbitrage;
 
 import com.arbitrage.common.service.BithumbHuobiServcie;
+import com.arbitrage.common.service.KimPremium;
 import com.arbitrage.common.service.ThettariService;
 import com.arbitrage.domain.bithumb.service.BithumbPairService;
 import com.arbitrage.domain.huobi.service.HuobiPairService;
@@ -28,8 +29,10 @@ public class ArbitrageApplication {
         ThettariService thettariService = context.getBean(ThettariService.class);
         BithumbPairService bithumbPairService = context.getBean(BithumbPairService.class);
         BithumbHuobiServcie bithumbHuobiServcie = context.getBean(BithumbHuobiServcie.class);
+        KimPremium kimPremium = context.getBean(KimPremium.class);
         bithumbHuobiServcie.compare();
-
+        Double kimPremium1 = kimPremium.getKimPremium();
+        log.info("kimPremium : {} ", kimPremium1);
 //        huobiPairService.saveHuobiPair();
 //        bithumbPairService.saveBithumbPair();
 //        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("AVAX/KRW"), true);
