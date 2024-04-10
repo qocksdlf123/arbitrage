@@ -71,32 +71,33 @@ public class HuobiPairService {
 //
 //        return lastPrice;
 //    }
-    public Double currentPrice(CurrencyPair currencyPair) throws IOException {
+    public Double getCurrentPrice(CurrencyPair currencyPair) throws IOException {
 
         Ticker ticker = marketDataService.getTicker(currencyPair);
         return ticker.getLast().doubleValue();
     }
-    public Double getOrderbookVolume(CurrencyPair currencyPair, Boolean isask) throws IOException {
-        Double currentPrice = currentPrice(currencyPair);
+
+    public Double getOrderbookVolume(CurrencyPair currencyPair, Boolean isAsk, Double percent) throws IOException {
+        Double currentPrice = getCurrentPrice(currencyPair);
         Double totalTokenAmount = 0D;
         OrderBook orderBook = marketDataService.getOrderBook(currencyPair);
-        log.info("currentPrice : {}",currentPrice);
+        log.info("currentPrice : {}", currentPrice);
 
         //ask : 매도 호가창 bid : 매수 호가창
-        if (isask == true) {
+        if (isAsk == true) {
             List<LimitOrder> asks = orderBook.getAsks();
             for (LimitOrder ask : asks) {
-                log.info("ask : {}",ask);
+                log.info("ask : {}", ask);
                 Double limitPrice = ask.getLimitPrice().doubleValue();
-                if (limitPrice <= currentPrice * 1.03) {
+                if (limitPrice <= currentPrice * (1 + percent * 100)) {
                     totalTokenAmount += ask.getOriginalAmount().doubleValue();
                 }
             }
-        } else if (isask == false) {
+        } else if (isAsk == false) {
             List<LimitOrder> bids = orderBook.getBids();
             for (LimitOrder bid : bids) {
                 Double limitPrice = bid.getLimitPrice().doubleValue();
-                if (limitPrice >= currentPrice * 0.97) {
+                if (limitPrice >= currentPrice * (1 - percent * 100)) {
                     totalTokenAmount += bid.getOriginalAmount().doubleValue();
                 }
             }
@@ -104,7 +105,7 @@ public class HuobiPairService {
         String currency = currencyPair.getCounter().toString();
 
         Double Multiple = 0D;
-            log.info("currency : {}",currency);
+        log.info("currency : {}", currency);
         if (currency.equals("KRW")) {
             Multiple = 1D;
         } else if (currency.equals("BTC")) {
@@ -112,33 +113,34 @@ public class HuobiPairService {
         } else if (currency.equals("USDT")) {
             Multiple = 1300D;       //추후 원달러 환율 API를 통해 값 받아올 것
         }
-        log.info("totalTokenAmount : {}",totalTokenAmount);
-        log.info("totalTokenAmount * currentPrice : {}",totalTokenAmount * currentPrice);
+        log.info("totalTokenAmount : {}", totalTokenAmount);
+        log.info("totalTokenAmount * currentPrice * Multiple : {}", totalTokenAmount * currentPrice * Multiple);
 //        log.info("Multiple : {}", Multiple);
         return totalTokenAmount * currentPrice * Multiple;
     }
 
-    public Integer[] getDWStatus(String currency){
+    public Integer[] getDWStatus(String currency) {
         String url = "https://api.huobi.pro/v2/reference/currencies?currency=" + currency;
         log.info("url : {}, ", url);
         JsonNode node = restTemplate.getForObject(url, JsonNode.class);
-        log.info("nod : {}",node);
-        log.info("currency : {}",currency);
+        log.info("nod : {}", node);
+        log.info("currency : {}", currency);
         String depositStatus = node.get("data").get(0).get("chains").get(0).get("depositStatus").asText();
         String withdrawalStatus = node.get("data").get(0).get("chains").get(0).get("withdrawStatus").asText();
         Integer[] status = new Integer[2];
-        if(depositStatus.equals("allowed")) status[0] = 1;
+        if (depositStatus.equals("allowed")) status[0] = 1;
         else if (depositStatus.equals("prohibited")) status[0] = 0;
-        if(withdrawalStatus.equals("allowed")) status[1] = 1;
+        if (withdrawalStatus.equals("allowed")) status[1] = 1;
         else if (withdrawalStatus.equals("prohibited")) status[1] = 0;
 
         return status;
     }
+
     @Scheduled(cron = "0 */10 * * * *")
     void getOrderBook() throws IOException {
         log.info("1");
         CurrencyPair currencyPair = new CurrencyPair("BFC/USDT");
-        Double currentPrice = currentPrice(currencyPair);
+        Double currentPrice = getCurrentPrice(currencyPair);
         Double totalTokenAmount = 0D;
         OrderBook orderBook = marketDataService.getOrderBook(currencyPair);
         log.info("currentPrice : {}", currentPrice);

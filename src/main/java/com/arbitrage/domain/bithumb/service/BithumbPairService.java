@@ -87,33 +87,38 @@ public class BithumbPairService {
 //
 //        return lastPrice;
 //    }
-    public Double currentPrice(CurrencyPair currencyPair) throws IOException {
+    public Double getCurrentPrice(CurrencyPair currencyPair) throws IOException {
 
         Ticker ticker = marketDataService.getTicker(currencyPair);
         return ticker.getLast().doubleValue();
     }
 
-    public Double getOrderbookVolume(CurrencyPair currencyPair, Boolean isask) throws IOException {
-        Double currentPrice = currentPrice(currencyPair);
+    /*
+        현재 가격, 현재 오더북 정보 가져와서
+        현재 가격과 percent만큼 차이나는 물량의 가격만 Double로 가져옴
+     */
+
+    public Double getOrderbookVolume(CurrencyPair currencyPair, Boolean isAsk, Double percent) throws IOException {
+        Double currentPrice = getCurrentPrice(currencyPair);
         Double totalTokenAmount = 0D;
         OrderBook orderBook = marketDataService.getOrderBook(currencyPair);
         log.info("currentPrice : {}", currentPrice);
 
         //ask : 매도 호가창 bid : 매수 호가창
-        if (isask == true) {
+        if (isAsk == true) {
             List<LimitOrder> asks = orderBook.getAsks();
             for (LimitOrder ask : asks) {
                 log.info("ask : {}", ask);
                 Double limitPrice = ask.getLimitPrice().doubleValue();
-                if (limitPrice <= currentPrice * 1.03) {
+                if (limitPrice <= currentPrice * (1 + percent * 100)) {
                     totalTokenAmount += ask.getOriginalAmount().doubleValue();
                 }
             }
-        } else if (isask == false) {
+        } else if (isAsk == false) {
             List<LimitOrder> bids = orderBook.getBids();
             for (LimitOrder bid : bids) {
                 Double limitPrice = bid.getLimitPrice().doubleValue();
-                if (limitPrice >= currentPrice * 0.97) {
+                if (limitPrice >= currentPrice * (1 - percent * 100 )) {
                     totalTokenAmount += bid.getOriginalAmount().doubleValue();
                 }
             }
@@ -130,7 +135,7 @@ public class BithumbPairService {
             Multiple = 1300D;       //추후 원달러 환율 API를 통해 값 받아올 것
         }
         log.info("totalTokenAmount : {}", totalTokenAmount);
-        log.info("totalTokenAmount * currentPrice : {}", totalTokenAmount * currentPrice);
+        log.info("totalTokenAmount * currentPrice * Multiple : {}", totalTokenAmount * currentPrice * Multiple);
 //        log.info("Multiple : {}", Multiple);
         return totalTokenAmount * currentPrice * Multiple;
     }
@@ -142,5 +147,11 @@ public class BithumbPairService {
         return new Integer[]{depositStatus, withdrawalStatus};
 
     }
+
+    public void getOrderBookByWS(){
+
+    }
+
+
 
 }

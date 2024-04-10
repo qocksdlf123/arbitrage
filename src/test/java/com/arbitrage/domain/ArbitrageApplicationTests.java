@@ -48,13 +48,13 @@ public class ArbitrageApplicationTests {
 
     @Test
     void testGetOrderbookVolumeForZBC_USDT() throws IOException {
-        when(huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true)).thenReturn(1234.56);
+        when(huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true, 3D)).thenReturn(1234.56);
 
-        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true);
+        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true, 3D);
 
         assertNotNull(orderbookVolume);
         assertEquals(1234.56, orderbookVolume);
-        verify(huobiPairService).getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true);
+        verify(huobiPairService).getOrderbookVolume(new CurrencyPair("ZBC/USDT"), true, 3D);
     }
 
     @Test
@@ -69,10 +69,10 @@ public class ArbitrageApplicationTests {
     }
 
     @Test
-    void getBithumbInstruments(){
+    void getBithumbInstruments() {
         List<Instrument> exchangeInstruments = bithumb.getExchangeInstruments();
         exchangeInstruments.forEach((i) -> {
-            log.info("Bithumb Instrumnets : {}",i);
+            log.info("Bithumb Instrumnets : {}", i);
         });
     }
 
