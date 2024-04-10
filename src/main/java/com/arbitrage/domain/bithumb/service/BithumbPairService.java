@@ -125,8 +125,4 @@ public class BithumbPairService {
         return new Integer[] {depositStatus, withdrawalStatus};
 
     }
-
-
-
-
 }
