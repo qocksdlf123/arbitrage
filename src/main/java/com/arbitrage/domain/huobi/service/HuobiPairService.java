@@ -12,6 +12,7 @@ import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.instrument.Instrument;
+import org.knowm.xchange.service.account.AccountService;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.knowm.xchange.huobi.HuobiExchange;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,9 +26,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HuobiPairService {
-    Exchange Huobi = ExchangeFactory.INSTANCE.createExchange(HuobiExchange.class);
-    MarketDataService marketDataService = Huobi.getMarketDataService();
-    List<Instrument> exchangeInstruments = Huobi.getExchangeInstruments();
+    Exchange huobiExchange = ExchangeFactory.INSTANCE.createExchange(HuobiExchange.class);
+    MarketDataService marketDataService = huobiExchange.getMarketDataService();
+    List<Instrument> exchangeInstruments = huobiExchange.getExchangeInstruments();
+    AccountService accountService = huobiExchange.getAccountService();
+
 
     private final HuobiPairRepository huobiPairRepository;
 
@@ -51,6 +54,9 @@ public class HuobiPairService {
         List<HuobiPair> HuobiPairs = huobiPairRepository.findAll();
         HuobiPairs.forEach((HuobiPair HuobiPair) -> {
             // 구현 예정
+
+
+
         });
     }
 
@@ -89,7 +95,7 @@ public class HuobiPairService {
             for (LimitOrder ask : asks) {
                 log.info("ask : {}", ask);
                 Double limitPrice = ask.getLimitPrice().doubleValue();
-                if (limitPrice <= currentPrice * (1 + percent * 100)) {
+                if (limitPrice <= currentPrice * (1 + (percent / 100))) {
                     totalTokenAmount += ask.getOriginalAmount().doubleValue();
                 }
             }
@@ -97,7 +103,7 @@ public class HuobiPairService {
             List<LimitOrder> bids = orderBook.getBids();
             for (LimitOrder bid : bids) {
                 Double limitPrice = bid.getLimitPrice().doubleValue();
-                if (limitPrice >= currentPrice * (1 - percent * 100)) {
+                if (limitPrice >= currentPrice * (1 - (percent / 100))) {
                     totalTokenAmount += bid.getOriginalAmount().doubleValue();
                 }
             }
