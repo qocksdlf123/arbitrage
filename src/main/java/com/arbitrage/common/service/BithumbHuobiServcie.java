@@ -1,5 +1,6 @@
 package com.arbitrage.common.service;
 
+import com.arbitrage.common.kakao.KakaoMSGService;
 import com.arbitrage.domain.bithumb.dao.BithumbPairRepository;
 import com.arbitrage.domain.bithumb.domain.BithumbPair;
 import com.arbitrage.domain.bithumb.service.BithumbPairService;
@@ -33,6 +34,9 @@ public class BithumbHuobiServcie {
 
     private final HuobiPairService huobiPairService;
 
+    private final KakaoMSGService kakaoMSGService;
+
+    private final KimPremium kimPremium;
     Exchange Huobi = ExchangeFactory.INSTANCE.createExchange(HuobiExchange.class);
     MarketDataService huobiMarketDataService = Huobi.getMarketDataService();
 
@@ -60,38 +64,39 @@ public class BithumbHuobiServcie {
             log.info("symbol : {}", symbol);
         }
     }
-    /*
-     현재의 빗썸 가격을 가져와 HTX의 오더북 기준 15% 내에 있는 물량 확인
-     */
-    @Scheduled(cron = "0 */5 * * * * ")
-    public void getBFCQuantity() throws IOException {
-        CurrencyPair currencyPair = new CurrencyPair("BFC/USDT");
-        Double currentPrice = bithumbPairService.getCurrentPrice(currencyPair);
-        Double totalTokenAmount = 0D;
+
+    @Scheduled(cron = "0 */30 * * * * ")
+    public void getProfit() throws IOException {
+        CurrencyPair currencyPair = new CurrencyPair("LBL/USDT");
+        Double bithumbtPrice = bithumbPairService.getCurrentPrice(currencyPair);
+        Double totalProfit = 0D;
         OrderBook orderBook = huobiMarketDataService.getOrderBook(currencyPair);
-        log.info("currentPrice : {}", currentPrice);
+        Double kimP = kimPremium.getKimPremium();
+        Double exchangeRate = kimPremium.getExchangeRate();
+
+        log.info("currentPrice : {}", bithumbtPrice);
 
         List<LimitOrder> asks = orderBook.getAsks();
         for (LimitOrder ask : asks) {
             log.info("ask : {}", ask);
             Double limitPrice = ask.getLimitPrice().doubleValue();
-            if (currentPrice / limitPrice >= 1.06) {
-                totalTokenAmount += ask.getOriginalAmount().doubleValue();
+            Double profit = bithumbtPrice - limitPrice * exchangeRate * kimP * 0.01;
+            log.info("profit : {}",profit);
+//            log.info("limitPrice : {}, exchangeRate : {}, kimP : {}",limitPrice, exchangeRate, kimP * 0.01);
+//            log.info("currentPrice : {}, lek : {}", bithumbtPrice, limitPrice * exchangeRate * kimP * 0.01);
+            if (profit >= 0 ) {
+                totalProfit += profit * ask.getOriginalAmount().doubleValue();
+                log.info("ask.getOriginalAmount().doubleValue() : {} ",ask.getOriginalAmount().doubleValue());
             }
         }
 
         String currency = currencyPair.getCounter().toString();
 
-        Double multiple = 0D;
         log.info("currency : {}", currency);
-        if (currency.equals("KRW")) {
-            multiple = 1D;
-        } else if (currency.equals("BTC")) {
-            multiple = 90000000D; // 추후 비트코인 가격을 통해 값 받아올 것
-        } else if (currency.equals("USDT")) {
-            multiple = 1300D;       //추후 원달러 환율 API를 통해 값 받아올 것
-        }
-        log.info("totalTokenAmount : {}", totalTokenAmount);
-        log.info("totalTokenAmount * currentPrice * Multiple : {}", totalTokenAmount * currentPrice * multiple);
+        log.info("totalProfit : {}", totalProfit);
+//        if(totalProfit>= 100000) {
+//            String accessToken = kakaoMSGService.accessTokenReissue();
+//            kakaoMSGService.sendMeMSG("LBL", "https://www.htx.com/trade/lbl_usdt?type=spot", accessToken);
+//        }
     }
 }

@@ -33,6 +33,7 @@ public class ArbitrageApplication {
         bithumbHuobiServcie.compare();
         Double kimPremium1 = kimPremium.getKimPremium();
         log.info("kimPremium : {} ", kimPremium1);
+        bithumbHuobiServcie.getProfit();
 //        huobiPairService.saveHuobiPair();
 //        bithumbPairService.saveBithumbPair();
 //        Double orderbookVolume = huobiPairService.getOrderbookVolume(new CurrencyPair("AVAX/KRW"), true);

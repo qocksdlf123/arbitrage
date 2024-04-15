@@ -142,7 +142,7 @@ public class HuobiPairService {
         return status;
     }
 
-    @Scheduled(cron = "0 */10 * * * *")
+//    @Scheduled(cron = "0 */10 * * * *")
     void getOrderBook() throws IOException {
         log.info("1");
         CurrencyPair currencyPair = new CurrencyPair("BFC/USDT");
