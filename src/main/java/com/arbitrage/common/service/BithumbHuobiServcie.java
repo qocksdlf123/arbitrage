@@ -99,7 +99,7 @@ public class BithumbHuobiServcie {
         log.info("currency : {}", currency);
         log.info("totalProfit : {}", totalProfit);
         log.info("totalAmout : {}",totalAmount);
-        if(totalProfit>= 200000) {
+        if(totalProfit>= 50000) {
             String accessToken = kakaoMSGService.accessTokenReissue();
             kakaoMSGService.sendMeMSG(totalProfit.toString(), "https://www.htx.com/trade/lbl_usdt?type=spot", accessToken);
         }
