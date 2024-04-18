@@ -65,28 +65,32 @@ public class BithumbHuobiServcie {
         }
     }
 
-    @Scheduled(cron = "0 */30 * * * * ")
+    @Scheduled(cron = "0 */10 * * * * ")
     public void getProfit() throws IOException {
         CurrencyPair currencyPair = new CurrencyPair("LBL/USDT");
         Double bithumbtPrice = bithumbPairService.getCurrentPrice(currencyPair);
         Double totalProfit = 0D;
+        Double totalAmount = 0D;
         OrderBook orderBook = huobiMarketDataService.getOrderBook(currencyPair);
         Double kimP = kimPremium.getKimPremium();
         Double exchangeRate = kimPremium.getExchangeRate();
 
-        log.info("currentPrice : {}", bithumbtPrice);
+        log.info("bithumbtPrice : {}", bithumbtPrice);
 
         List<LimitOrder> asks = orderBook.getAsks();
         for (LimitOrder ask : asks) {
-            log.info("ask : {}", ask);
             Double limitPrice = ask.getLimitPrice().doubleValue();
-            Double profit = bithumbtPrice - limitPrice * exchangeRate * kimP * 0.01;
-            log.info("profit : {}",profit);
+            Double htxPriceByKRW = limitPrice * exchangeRate * (1 + kimP * 0.01);
+//            log.info("limitPrice : {}, exchangeRate : {}, kimP : {}", limitPrice, exchangeRate, kimP);
+//            log.info("htxPriceByKRW : {}", htxPriceByKRW);
+            Double profit = bithumbtPrice - htxPriceByKRW;
+//            log.info("profit : {}", profit);      //원
 //            log.info("limitPrice : {}, exchangeRate : {}, kimP : {}",limitPrice, exchangeRate, kimP * 0.01);
 //            log.info("currentPrice : {}, lek : {}", bithumbtPrice, limitPrice * exchangeRate * kimP * 0.01);
-            if (profit >= 0 ) {
+            if (profit >= 0) {
+                totalAmount += ask.getOriginalAmount().doubleValue();
                 totalProfit += profit * ask.getOriginalAmount().doubleValue();
-                log.info("ask.getOriginalAmount().doubleValue() : {} ",ask.getOriginalAmount().doubleValue());
+//                log.info("ask.getOriginalAmount().doubleValue() : {} ", ask.getOriginalAmount().doubleValue());
             }
         }
 
@@ -94,9 +98,10 @@ public class BithumbHuobiServcie {
 
         log.info("currency : {}", currency);
         log.info("totalProfit : {}", totalProfit);
-//        if(totalProfit>= 100000) {
-//            String accessToken = kakaoMSGService.accessTokenReissue();
-//            kakaoMSGService.sendMeMSG("LBL", "https://www.htx.com/trade/lbl_usdt?type=spot", accessToken);
-//        }
+        log.info("totalAmout : {}",totalAmount);
+        if(totalProfit>= 200000) {
+            String accessToken = kakaoMSGService.accessTokenReissue();
+            kakaoMSGService.sendMeMSG(totalProfit.toString(), "https://www.htx.com/trade/lbl_usdt?type=spot", accessToken);
+        }
     }
 }
